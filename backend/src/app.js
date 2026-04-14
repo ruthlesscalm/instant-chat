@@ -1,6 +1,9 @@
 import express from "express";
 import roomRouter from "./routes/room.routes.js";
 import cookieParser from "cookie-parser";
+import connectToDB from "./database/db.js";
+
+connectToDB();
 
 const app = express();
 
