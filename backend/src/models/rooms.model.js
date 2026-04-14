@@ -12,6 +12,10 @@ const roomSchema = new mongoose.Schema(
       minlength: 3,
       maxlength: 72,
     },
+    users: {
+      type: [String],
+      required: true,
+    },
   },
   { timestamps: true },
 );
