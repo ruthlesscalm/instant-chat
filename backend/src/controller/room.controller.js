@@ -11,8 +11,10 @@ const cookieOptions = {
   sameSite: "lax",
 };
 
+const normalize = (v) => v?.toLowerCase().trim();
+
 const createRoom = async (req, res) => {
-  const username = req.body?.username;
+  const username = normalize(req.body?.username);
   const password = req.body?.password;
 
   if (!username) {
@@ -36,9 +38,9 @@ const createRoom = async (req, res) => {
       "PASSWORD_FIELD_INVALID",
     );
   }
-  if (!/^\w{3,20}$/.test(username)) {
+  if (!/^[a-z0-9_]{3,20}$/.test(username)) {
     throw new AppError(
-      "Username can only contain alphanumeric and underscore, [a-z, A-Z, 0-9, _] and the characters length should be between 3 and 20",
+      "Username can only contain alphanumeric and underscore, [a-z, 0-9, _] and the characters length should be between 3 and 20",
       400,
       "USERNAME_FIELD_INVALID",
     );
@@ -51,13 +53,13 @@ const createRoom = async (req, res) => {
   const newRoom = await Room.create({
     roomId,
     password: hashedPassword,
-    username,
+    users: [username],
   });
 
   const accessToken = jwt.sign(
     {
       roomId: newRoom.roomId,
-      username: newRoom.username,
+      username,
     },
     config.JWT_ACCESS_TOKEN,
     {
@@ -67,7 +69,7 @@ const createRoom = async (req, res) => {
   const adminToken = jwt.sign(
     {
       roomId: newRoom.roomId,
-      username: newRoom.username,
+      username,
       role: "admin",
     },
     config.JWT_ADMIN_TOKEN,
@@ -85,11 +87,13 @@ const createRoom = async (req, res) => {
       ...cookieOptions,
       maxAge: 24 * 60 * 60 * 1000,
     })
-    .status(200)
+    .status(201)
     .json({
       success: true,
       message: "Room creation successful",
       code: "ROOM_CREATION_SUCCESS",
+      username,
+      roomId: newRoom.roomId,
     });
 };
 
