@@ -1,1 +1,1 @@
-# relay-chat
+# instant-chat
