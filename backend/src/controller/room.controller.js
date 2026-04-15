@@ -4,6 +4,7 @@ import AppError from "../errors/appError.js";
 import Room from "../models/rooms.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import asyncHandler from "../utils/asyncHandler.utils.js";
 
 const cookieOptions = {
   httpOnly: true,
@@ -13,7 +14,7 @@ const cookieOptions = {
 
 const normalize = (v) => v?.toLowerCase().trim();
 
-const createRoom = async (req, res) => {
+const createRoom = asyncHandler(async (req, res) => {
   const username = normalize(req.body?.username);
   const password = req.body?.password;
 
@@ -95,6 +96,8 @@ const createRoom = async (req, res) => {
       username,
       roomId: newRoom.roomId,
     });
-};
+});
 
-export { createRoom };
+const joinRoom = asyncHandler(async (req, res) => {});
+
+export { createRoom, joinRoom };
