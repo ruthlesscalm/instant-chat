@@ -119,13 +119,17 @@ const joinRoom = asyncHandler(async (req, res) => {
   }
   const existingRoom = await Room.findOne({ roomId }).select("+password");
 
-  // if (room.users.includes(username)) {
-  //   throw new AppError(
-  //     "Username already exists, pick another username",
-  //     400,
-  //     "USERNAME_ALREADY_EXISTS",
-  //   );
-  // }
+  if (!existingRoom) {
+    throw new AppError("Room doesn't exist", 400, "INVALID_ROOM_ID");
+  }
+
+  if (existingRoom.users.includes(username)) {
+    throw new AppError(
+      "Username already exists, pick another username",
+      400,
+      "USERNAME_ALREADY_EXISTS",
+    );
+  }
   const isPassword = await bcrypt.compare(password, existingRoom.password);
 
   if (!isPassword) {
@@ -135,20 +139,29 @@ const joinRoom = asyncHandler(async (req, res) => {
       "INVALID_CREDENTIALS",
     );
   }
-  const room = await Room.findOneAndUpdate(
-    { roomId },
+  const room = await Room.updateOne(
+    { roomId, users: { $ne: username } },
     {
       $addToSet: {
         users: username,
       },
     },
-  ).select("users");
+    {
+      runValidators: true,
+    },
+  );
+  if (room.modifiedCount === 0) {
+    throw new AppError(
+      "Username already exists, pick another username",
+      400,
+      "USERNAME_ALREADY_EXISTS",
+    );
+  }
   return res.status(200).json({
     success: true,
     message: "Welcome",
     roomId,
     username,
-    join,
   });
 });
 
