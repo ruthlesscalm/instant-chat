@@ -98,6 +98,58 @@ const createRoom = asyncHandler(async (req, res) => {
     });
 });
 
-const joinRoom = asyncHandler(async (req, res) => {});
+const joinRoom = asyncHandler(async (req, res) => {
+  const roomId = req.params?.roomId;
+  const username = normalize(req.body?.username);
+  const password = req.body?.password;
+
+  if (!username) {
+    throw new AppError(
+      "Username field cannot be empty",
+      400,
+      "USERNAME_FIELD_EMPTY",
+    );
+  }
+  if (!password) {
+    throw new AppError(
+      "Password field cannot be empty",
+      400,
+      "PASSWORD_FIELD_EMPTY",
+    );
+  }
+  const existingRoom = await Room.findOne({ roomId }).select("+password");
+
+  // if (room.users.includes(username)) {
+  //   throw new AppError(
+  //     "Username already exists, pick another username",
+  //     400,
+  //     "USERNAME_ALREADY_EXISTS",
+  //   );
+  // }
+  const isPassword = await bcrypt.compare(password, existingRoom.password);
+
+  if (!isPassword) {
+    throw new AppError(
+      "Invalid roomId or password",
+      401,
+      "INVALID_CREDENTIALS",
+    );
+  }
+  const room = await Room.findOneAndUpdate(
+    { roomId },
+    {
+      $addToSet: {
+        users: username,
+      },
+    },
+  ).select("users");
+  return res.status(200).json({
+    success: true,
+    message: "Welcome",
+    roomId,
+    username,
+    join,
+  });
+});
 
 export { createRoom, joinRoom };
