@@ -1,5 +1,13 @@
-const Landing = () => {
-    return <div>Hello World</div>
-}
+import Header from '../components/Header';
+import Main from '../components/Main';
 
-export default Landing
+const Landing = () => {
+    return (
+        <>
+            <Header user={false} />
+            <Main />
+        </>
+    );
+};
+
+export default Landing;
