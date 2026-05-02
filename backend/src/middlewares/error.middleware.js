@@ -10,6 +10,8 @@ const errorMiddleware = (err, req, res, next) => {
     });
   }
   console.log("Error: ", err);
+  if (!statusCode) {
+  }
   return res.status(statusCode || 500).json({
     success: false,
     code: messageCode || "INTERNAL_SERVER_ERROR",

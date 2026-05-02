@@ -3,7 +3,7 @@ import MoonLogo from '../assets/moon-light.svg';
 import SunLogo from '../assets/sun-light.svg';
 import { GlobalContext } from '../context/GlobalState';
 
-const Header = ({ user }) => {
+const Header = ({ user, username }) => {
     const { theme, setTheme } = useContext(GlobalContext);
     const themeChanger = () => {
         setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
@@ -45,7 +45,7 @@ const Header = ({ user }) => {
                         type="button"
                         className="h-10 aspect-square rounded-full"
                     >
-                        V
+                        {username.slice(0, 1)}
                     </button>
                 </div>
             </div>

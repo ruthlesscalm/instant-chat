@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Main = () => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         username: '',
         password: '',
@@ -13,8 +15,14 @@ const Main = () => {
             [e.target.name]: e.target.value,
         }));
     };
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        const form = new FormData(e.target);
+        const rawData = Object.fromEntries(form);
+        if (joinRoom) {
+            localStorage.setItem('username', rawData.username);
+            navigate(`/join/${rawData.roomId}`);
+        }
     };
     return (
         <main>
@@ -26,7 +34,7 @@ const Main = () => {
                     Toggle
                 </button>
             </div>
-            <form>
+            <form onSubmit={handleSubmit}>
                 <div>
                     <label htmlFor="username">Username: </label>
                     <input
