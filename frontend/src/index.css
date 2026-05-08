@@ -12,6 +12,7 @@
 
 @theme {
   --font-cherrybomb: 'CherryBomb', san-serif;
+  --breakpoint-2k: 2560px;
 }
 
 @layer utilities {
